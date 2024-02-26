@@ -1,0 +1,637 @@
+SQL Queries:
+
+## To find the maximum temps in timestamps------------------------>
+SELECT [SP1Temp1] AS max_value, [TimeStamp] AS on_timestamp
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [SP1Temp1] = (SELECT MAX([SP1Temp1]) FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]);
+
+## To query the specific columns in specific timestamps----------------------->
+SELECT [SP1TEMP] ,[SP2TEMP],[TimeStamp] FROM [ChironDZ9_1] WHERE Timestamp 
+BETWEEN '2023-09-21T00:00:47' AND '2023-09-22T11:59:58' ORDER BY 'TimeStamp'"
+
+
+## To query the maximum values in each date------------->
+SELECT
+  MAX([SP1Temp1]) AS max_value,
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+GROUP BY CAST([TimeStamp] AS DATE);
+
+## To get the above maximum values in ascending order ---------------->
+SELECT
+  MAX([SP1Temp1]) AS max_value,
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+GROUP BY CAST([TimeStamp] AS DATE)
+ORDER BY date ASC;
+
+## ----------------- Coolant pressure delta condition ------------------------>
+SELECT 
+    [CoolantPr], 
+    [Coolant_Set_pressure], 
+    [TimeStamp],
+    [Coolant_Set_pressure] - [CoolantPr] AS delta
+FROM 
+    [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE 
+    [PresentTool] = 7 AND CONVERT(DATE, [TimeStamp]) >= DATEADD(DAY, -360, CONVERT(DATE, GETDATE())) AND [Coolant_Set_pressure] - [CoolantPr] > 20 -- Filter for delta greater than 50
+ORDER BY 
+    [TimeStamp];
+
+## To get time before some time
+SELECT [SP1Temp1]
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9]
+WHERE [TimeStamp] >= DATEADD(SECOND, -10, GETDATE())
+  AND [TimeStamp] <= GETDATE()
+ORDER BY [TimeStamp];
+
+
+### ---------------------------- EFD2 --------------------------------------------
+
+## 6 months for EFD2 --------------------------->
+SELECT
+  MAX([HEnergy1]) AS max_HEnergy1, MAX([TEnergy1]) AS max_TEnergy1,
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+GROUP BY CAST([TimeStamp] AS DATE)
+ORDER BY date ASC;
+
+## ---------------current coolant pressure---------------------------------->
+SELECT [CoolantPr], [TimeStamp]
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [PresentTool] = 7 
+  AND CONVERT(DATE, [TimeStamp]) = CONVERT(DATE, GETDATE())
+ORDER BY [TimeStamp];
+
+
+## getting many max parameters------------------------------>
+SELECT
+  MAX([HEnergy1]) AS max_HEnergy1, MAX([TEnergy1]) AS max_TEnergy1, MAX([TemTempRH]) AS max_TemTempRH,
+  MAX([TemTempLH]) AS max_TemTempLH, MAX([Temp]) AS max_Temp, MAX([ScrapCount]) AS max_ScrapCount, 
+  MAX([HTempLH]) AS max_HTempLH, MAX([HTempRH]) AS max_HTempRH, MAX([CoolingTemp]) AS max_CoolingTemp,
+  MAX([QTemp]) AS max_QTemp,
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+GROUP BY CAST([TimeStamp] AS DATE)
+ORDER BY date ASC; 	
+
+
+## Getting all the datas in ascending order ---------------------->
+SELECT
+  [HEnergy1] , [TEnergy1] ,
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+ORDER BY date ASC;
+
+## ----------- for a particular date ------------------------------------------------>
+SELECT
+  [HEnergy1] , [TEnergy1] , [TemTempRH], [TemTempLH],
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2] WHERE	CAST([TimeStamp] AS DATE) = '2023-08-17'
+ORDER BY date ASC;
+
+### ---------------------- in python code ------------------------------------------>
+sql = f"SELECT [HEnergy1] , [TEnergy1] , [TemTempRH], [TemTempLH], [TimeStamp], CAST([TimeStamp] AS DATE) 
+AS date FROM [EFD2] WHERE CAST([TimeStamp] AS DATE) = '2023-09-14' ORDER BY [TimeStamp] ASC"
+
+
+## getting parameters within a range ------------------------------>
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 2650 AND 6000
+ORDER BY date ASC;
+
+## Getting the above parameters for last 6 months ----------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 2650 AND 6000
+  AND [TimeStamp] >= DATEADD(MONTH, -6, GETDATE()) -- Filter for the last 6 months
+ORDER BY date ASC;
+
+## getting the above parameters from 3rd month to 6th month ------------------>
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 2650 AND 6000
+  AND [TimeStamp] >= DATEADD(MONTH, -6, GETDATE())  -- Starting from the current date, going back 6 months
+  AND [TimeStamp] < DATEADD(MONTH, -3, GETDATE())   -- Up to the 3rd month
+ORDER BY date ASC;
+
+
+## ----------------------- Python SQL Script ------------------------------ ##
+SELECT TOP 1 [SP1TEMP], [TimeStamp] FROM [ChironDZ9_1] WHERE Timestamp BETWEEN '{past_time}' AND 
+'{current_time}' ORDER BY 'TimeStamp' DESC"
+## ---------------------------------------------------------------------------------------##
+
+
+### SQL query for EFD2 ----------------------------------------------------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 0 AND 6000
+  AND [TimeStamp] >= DATEADD(MONTH, -1, GETDATE()) -- Filter for the last 6 months
+ORDER BY date ASC;
+
+## getting another column for Time(hh:min:ss)------------------------------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date,
+  FORMAT([TimeStamp], 'HH:mm:ss') AS time
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 0 AND 6000
+  AND [TimeStamp] >= DATEADD(MONTH, -1, GETDATE()) -- Filter for the last 1 months
+ORDER BY date ASC, time ASC;
+
+## getting data for 1 day -------------------------------------------------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date,
+  FORMAT([TimeStamp], 'HH:mm:ss') AS time
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 0 AND 6000
+  AND [TimeStamp] >= DATEADD(DAY, -1, GETDATE()) -- Filter for the last 1 day
+ORDER BY date ASC, time ASC;
+
+## getting one parameter on a particular date ----------------------------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date,
+  FORMAT([TimeStamp], 'HH:mm:ss') AS time
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 0 AND 6000
+  AND CAST([TimeStamp] AS DATE) = '2023-08-15'
+ORDER BY date ASC, time ASC;
+
+## --------------------------------------------- DZ9 ----------------------------------------------##
+## Selecting top 100 in sql -------------------------------------------------------------->
+SELECT TOP (1000) [PartCount]
+      ,[ProgRun]
+      ,[PresentTool]
+      ,[ToolBroken]
+      ,[TimeStamp]
+  FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9] 
+  ORDER BY 'TimeStamp' DESC;
+
+## --------------------- Selecting chironDZ9 parameters with conditions in Python -------------------------------- ##
+sql = """SELECT [PresentTool] ,[CoolantPr],[TimeStamp] FROM [ChironDZ9_1] WHERE Timestamp BETWEEN '2023-07-25T00:00:47' AND '2023-12-12T09:45:58'
+  AND [PresentTool] = 7 AND [CoolantPr]>0 ORDER BY 'TimeStamp'""" 
+df = pd.read_sql_query(sql, cnxn, index_col="TimeStamp", parse_dates=True)
+
+### --------------------------- Tool 7 ------------------------------------------------------------------------- ##
+SELECT MAX([CoolantPr]) AS max_value, [PresentTool], CONVERT(date, [TimeStamp]) AS on_date
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [PresentTool] = 7
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+ORDER BY on_date ASC;
+
+
+### --------------------------------- Coolant Pressure -------------------------------------------------------------- ###
+SELECT
+  MAX([CoolantPr]) AS max_value,
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+GROUP BY CAST([TimeStamp] AS DATE)
+ORDER BY date ASC;
+
+### ------------------------- getting multiple databases -------------------------------------------------------- ###
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz10' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ10]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz9' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz8' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ8]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz7' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ7]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz6' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ6]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz4' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ4]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz3' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ3]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz2' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ2]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz1' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ1]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+ORDER BY on_date ASC;
+
+## ------------------------------- diiferent DZ, Different Tool when ToolBroken------------------------------------------------->
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz11' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ1]
+WHERE [PresentTool] =8
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz10' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ10]
+WHERE [PresentTool] = 16
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz9' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz8' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ8]
+WHERE [PresentTool] =18
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz7' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ7]
+WHERE [PresentTool] =8
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz6' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ6]
+WHERE [PresentTool] IN (7, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz4' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ4]
+WHERE [PresentTool] IN (8, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz3' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ3]
+WHERE [PresentTool] IN (8, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz2' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ2]
+WHERE [PresentTool] IN (8, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, MAX([CoolantPr]) AS max_value, [PresentTool], 'dz1' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ1]
+WHERE [PresentTool] IN (8, 23)
+GROUP BY [PresentTool], CONVERT(date, [TimeStamp])
+
+ORDER BY on_date ASC;
+
+
+### Find coolant pressure when ToolBroken is true for a particular date --------------------------------------------------->>>>
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz10' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ10]
+WHERE [PresentTool] = 16 AND [ToolBroken] = 1
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz9' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [PresentTool] IN (7, 23) AND [ToolBroken] = 1
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz8' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ8]
+WHERE [PresentTool] = 18 AND [ToolBroken] = 1
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz7' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ7]
+WHERE [PresentTool] = 8 AND [ToolBroken] = 1
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz6' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ6]
+WHERE [PresentTool] IN (7, 23) AND [ToolBroken] = 1
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz4' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ4]
+WHERE [PresentTool] IN (8, 23) AND [ToolBroken] = 1
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz3' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ3]
+WHERE [PresentTool] IN (8, 23) AND [ToolBroken] = 1
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz2' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ2]
+WHERE [PresentTool] IN (8, 23) AND [ToolBroken] = 1
+
+UNION
+
+SELECT CONVERT(date, [TimeStamp]) AS on_date, [CoolantPr] AS coolant_value, [PresentTool], 'dz1' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ1]
+WHERE [PresentTool] IN (8, 23) AND [ToolBroken] = 1
+
+ORDER BY on_date ASC;
+
+### -------------------------------- coolant pressure as per date and time ------------------------------------------>>>>
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz10' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ10]
+WHERE [ToolBroken] = 1
+
+UNION
+
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz9' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [ToolBroken] = 1
+
+UNION
+
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz8' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ8]
+WHERE [ToolBroken] = 1
+
+UNION
+
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz7' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ7]
+WHERE [ToolBroken] = 1
+
+UNION
+
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz6' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ6]
+WHERE [ToolBroken] = 1
+
+UNION
+
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz4' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ4]
+WHERE [ToolBroken] = 1
+
+UNION
+
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz3' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ3]
+WHERE [ToolBroken] = 1
+
+UNION
+
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz2' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ2]
+WHERE [ToolBroken] = 1
+
+UNION
+
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    CONVERT(time, [TimeStamp]) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz1' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ1]
+WHERE [ToolBroken] = 1
+
+
+ORDER BY on_date ASC, on_time ASC;
+
+
+### Time before break ---------------------------------------------------------->>>
+SELECT 
+    CONVERT(date, DATEADD(second, -60, [TimeStamp])) AS on_date, 
+    CONVERT(time, DATEADD(second, -60, [TimeStamp])) AS on_time,
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], 
+    'dz9' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [ToolBroken] = 1
+ORDER BY on_date ASC, on_time ASC;
+
+### Time before break in timestamp ------------------------------------------------->>>
+SELECT 
+    CONVERT(date, [TimeStamp]) AS on_date, 
+    [CoolantPr] AS coolant_value, 
+    [PresentTool], [ToolBroken],
+    [TimeStamp], 
+    'dz9' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE 
+    [ToolBroken] = 1
+    AND [TimeStamp] >= '7/26/2023  12:35:36'
+    AND [TimeStamp] <= '7/26/2023  12:39:36'
+ORDER BY 
+    TimeStamp ASC;
+
+
+### -------------------------- EMAG --------------------------------------------------- >>>
+
+SELECT CAST([TimeStamp] AS DATE) AS date, MAX([Sp1MTemp]) AS sp1_temp, MAX([Sp2MTemp]) AS sp2_temp, 'emag1' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[EMAGVSC1]
+GROUP BY CAST([TimeStamp] AS DATE)
+
+UNION
+
+SELECT CAST([TimeStamp] AS DATE) AS date, MAX([Sp1MTemp]) AS sp1_temp, MAX([Sp2MTemp]) AS sp2_temp, 'emag2' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[EMAGVSC2]
+GROUP BY CAST([TimeStamp] AS DATE)
+
+UNION
+
+SELECT CAST([TimeStamp] AS DATE) AS date, MAX([Sp1MTemp]) AS sp1_temp, MAX([Sp2MTemp]) AS sp2_temp, 'emag3' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[EMAGVSC3]
+GROUP BY CAST([TimeStamp] AS DATE)
+
+UNION
+
+SELECT CAST([TimeStamp] AS DATE) AS date, MAX([Spindle1_Temperature]) AS sp1_temp, MAX([Spindle2_Temperature]) AS sp2_temp, 'emag7' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[EMAGVSC7]
+GROUP BY CAST([TimeStamp] AS DATE)
+
+UNION
+
+SELECT CAST([TimeStamp] AS DATE) AS date, MAX([Spindle1_Temperature]) AS sp1_temp, MAX([Spindle2_Temperature]) AS sp2_temp, 'emag8' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[EMAGVSC8]
+GROUP BY CAST([TimeStamp] AS DATE)
+
+ORDER BY date ASC;
+
+#### --------------------------------- Coolant Pressure is the only cause? --------------------------------------->>>> ####
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+ORDER BY date ASC;
+
+
+
+SELECT [CoolantPr], [Coolant_Set_pressure], 
+
+      [PresentTool]
+      ,[ToolBroken]
+      ,[TimeStamp]
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1] 
+WHERE [TimeStamp] >= DATEADD(day, -30, GETDATE())
+ORDER BY [TimeStamp] DESC;
+
+
+#### ----------------------------------- Finding toolbroken in all databases ------------------------------------->>>> ####
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz9' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ9_1]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+UNION ALL
+
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz1' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ1]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+UNION ALL
+
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz2' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ2]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+UNION ALL
+
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz3' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ3]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+UNION ALL
+
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz4' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ4]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+UNION ALL
+
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz6' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ6]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+UNION ALL
+
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz7' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ7]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+UNION ALL
+
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz8' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ8]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+UNION ALL
+
+SELECT [CoolantPr], CAST([TimeStamp] AS DATE) AS date, 'dz10' AS database_name
+FROM [DB_MFC2DB_SQL].[dbo].[ChironDZ10]
+WHERE [ToolBroken] = 1 
+  AND [ProgRun]=1
+
+ORDER BY date ASC;
