@@ -1,0 +1,38 @@
+### SQL query for EFD2 ----------------------------------------------------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 0 AND 6000
+  AND [TimeStamp] >= DATEADD(MONTH, -1, GETDATE()) -- Filter for the last 6 months
+ORDER BY date ASC;
+
+## getting another column for Time(hh:min:ss)------------------------------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date,
+  FORMAT([TimeStamp], 'HH:mm:ss') AS time
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 0 AND 6000
+  AND [TimeStamp] >= DATEADD(MONTH, -1, GETDATE()) -- Filter for the last 1 months
+ORDER BY date ASC, time ASC;
+
+## getting data for 1 day -------------------------------------------------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date,
+  FORMAT([TimeStamp], 'HH:mm:ss') AS time
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 0 AND 6000
+  AND [TimeStamp] >= DATEADD(DAY, -1, GETDATE()) -- Filter for the last 1 day
+ORDER BY date ASC, time ASC;
+
+## getting one parameter on a particular date ----------------------------------------->
+SELECT
+  [HEnergy1],
+  CAST([TimeStamp] AS DATE) AS date,
+  FORMAT([TimeStamp], 'HH:mm:ss') AS time
+FROM [DB_MFC2DB_SQL].[dbo].[EFD2]
+WHERE [HEnergy1] BETWEEN 0 AND 6000
+  AND CAST([TimeStamp] AS DATE) = '2023-08-15'
+ORDER BY date ASC, time ASC;

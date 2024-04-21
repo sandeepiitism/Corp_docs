@@ -1,0 +1,7 @@
+IMAGE AUGMENTATION
+
+1. ImaAug --> https://github.com/aleju/imgaug
+2. Albumentation --> https://albumentations.ai/
+3. Pillow --> substitute to OpenCV
+4. Vidgear --> Another substitute of OpenCV
+5. Mosaic Augmentation --> using RoboFlow

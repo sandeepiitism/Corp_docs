@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Web App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .tank-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .tank-button {
+            margin: 5px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Demo App</h1>
+</header>
+
+<h1>Upload Excel File</h1>
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".xlsx">
+    <input type="submit" value="Submit">
+</form>
+
+<div class="tank-buttons">
+    {% for tank in unique_tanks %}
+        <button class="tank-button" name="tank_number" value="{{ tank }}">{{ tank }}</button>
+    {% endfor %}
+</div>
+
+</body>
+</html>

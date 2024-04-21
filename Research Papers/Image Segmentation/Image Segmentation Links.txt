@@ -1,0 +1,5 @@
+IMAGE SEGMENTATION
+
+1. V7 Labs --> https://www.v7labs.com/blog/image-segmentation-guide --> annotation tools
+2. ROI Pool --> https://kharshit.github.io/blog/2019/08/23/quick-intro-to-instance-segmentation
+3. Deep Learning CV --> https://www.nvidia.com/en-in/training/

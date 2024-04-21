@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap; 
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .result-box {
+            flex: 0 0 calc(25% - 20px); 
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            text-align: center;
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        .parameter {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .value {
+            font-size: 36px;
+            color: #ff0000;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="result-box">
+    <h1>pH Prediction Result</h1>
+    <div class="parameter">Forecasted pH:</div>
+    <div class="value">{{ result['forecasted_pH'] }}</div>
+    <p>on {{ result['forecast_date_pH'] }}</p>
+    <p>Forecasted Min. pH is: {{ result['forecasted_min_pH'] }} </p>
+    <p>Forecasted Max. pH is: {{ result['forecasted_max_pH'] }} </p>
+</div>
+
+<div class="result-box">
+    <h1>Cond. Prediction Result</h1>
+    <div class="parameter">Forecasted Conductivity:</div>
+    <div class="value">{{ result['forecasted_conductivity'] }}</div>
+    <p>on {{ result['forecast_date_conductivity'] }}</p>
+    <p>Forecasted Min. Conductivity is: {{ result['forecasted_min_conductivity'] }} </p>
+    <p>Forecasted Max. Conductivity is: {{ result['forecasted_max_conductivity'] }} </p>
+</div>
+
+<div class="result-box">
+    <h1>BOD Prediction Result</h1>
+    <div class="parameter">Forecasted BOD:</div>
+    <div class="value">{{ result['forecasted_bod'] }}</div>
+    <p>on {{ result['forecast_date_bod'] }}</p>
+    <p>Forecasted Min. Conductivity is: {{ result['forecasted_min_bod'] }} </p>
+    <p>Forecasted Max. Conductivity is: {{ result['forecasted_max_bod'] }} </p>
+</div>
+
+<div class="result-box">
+    <h1>COD Prediction Result</h1>
+    <div class="parameter">Forecasted COD:</div>
+    <div class="value">{{ result['forecasted_cod'] }}</div>
+    <p>on {{ result['forecast_date_cod'] }}</p>
+    <p>Forecasted Min. Conductivity is: {{ result['forecasted_min_cod'] }} </p>
+    <p>Forecasted Max. Conductivity is: {{ result['forecasted_max_cod'] }} </p>
+</div>
+
+<div class="result-box">
+    <h1>TOC Prediction Result</h1>
+    <div class="parameter">Forecasted TOC:</div>
+    <div class="value">{{ result['forecasted_toc'] }}</div>
+    <p>on {{ result['forecast_date_toc'] }}</p>
+    <p>Forecasted Min. Conductivity is: {{ result['forecasted_min_toc'] }} </p>
+    <p>Forecasted Max. Conductivity is: {{ result['forecasted_max_toc'] }} </p>
+</div>
+
+<div class="result-box">
+    <h1>Turb. Prediction Result</h1>
+    <div class="parameter">Forecasted TURB.:</div>
+    <div class="value">{{ result['forecasted_turb'] }}</div>
+    <p>on {{ result['forecast_date_turb'] }}</p>
+    <p>Forecasted Min. Conductivity is: {{ result['forecasted_min_turb'] }} </p>
+    <p>Forecasted Max. Conductivity is: {{ result['forecasted_max_turb'] }} </p>
+</div>
+
+</body>
+</html>
